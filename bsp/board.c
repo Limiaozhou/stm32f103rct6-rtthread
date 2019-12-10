@@ -77,6 +77,8 @@ void rt_hw_board_init()
     
     /* System Tick Configuration */
     SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
+    
+    Led_GPIO_Init();
 
     /* Call components board initial (use INIT_BOARD_EXPORT()) */
 #ifdef RT_USING_COMPONENTS_INIT
