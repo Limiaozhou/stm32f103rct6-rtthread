@@ -15,6 +15,9 @@
 #include <rthw.h>
 #include <rtthread.h>
 
+#define UART_DEBUG Uart5
+#define UARTX_DEBUG UART5
+
 #if 0
 #define _SCB_BASE       (0xE000E010UL)
 #define _SYSTICK_CTRL   (*(rt_uint32_t *)(_SCB_BASE + 0x0))
@@ -78,7 +81,11 @@ void rt_hw_board_init()
     /* System Tick Configuration */
     SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
     
+    /* LED GPIO引脚初始化 */
     Led_GPIO_Init();
+    
+    /* debug串口初始化，波特率115200，接收缓存大小0，发送缓存大小0，立即阻塞发送模式 */
+    Uart_Init(UART_DEBUG, 115200, 0, 0, UartTx_ImmediatelyBlock_Sel);
 
     /* Call components board initial (use INIT_BOARD_EXPORT()) */
 #ifdef RT_USING_COMPONENTS_INIT
@@ -99,4 +106,27 @@ void SysTick_Handler(void)
 
     /* leave interrupt */
     rt_interrupt_leave();
+}
+
+void rt_hw_console_output(const char *str)
+{
+    /* 进入临界段 */
+    rt_enter_critical();
+    
+    /* 直到字符串结束 */
+    while (*str != '\0')
+    {
+        /* 换行，先输出一个回车，再输出换行 */
+        if (*str == '\n')
+        {
+            USART_SendData(UARTX_DEBUG, '\r');
+            while (USART_GetFlagStatus(UARTX_DEBUG, USART_FLAG_TXE) == RESET);
+        }
+        
+        USART_SendData(UARTX_DEBUG, *str++);
+        while (USART_GetFlagStatus(UARTX_DEBUG, USART_FLAG_TXE) == RESET);
+    }
+    
+    /* 退出临界段 */
+    rt_exit_critical();
 }
