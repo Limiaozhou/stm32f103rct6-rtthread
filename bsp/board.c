@@ -86,6 +86,9 @@ void rt_hw_board_init()
     
     /* debug串口初始化，波特率115200，接收缓存大小0，发送缓存大小0，立即阻塞发送模式 */
     Uart_Init(UART_DEBUG, 115200, 0, 0, UartTx_ImmediatelyBlock_Sel);
+    
+    /* KEY GPIO引脚初始化 */
+    Key_GPIO_Init();
 
     /* Call components board initial (use INIT_BOARD_EXPORT()) */
 #ifdef RT_USING_COMPONENTS_INIT
