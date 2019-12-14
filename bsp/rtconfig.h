@@ -97,7 +97,7 @@
 // </c>
 // <c1>Using Message Queue
 //  <i>Using Message Queue
-//#define RT_USING_MESSAGEQUEUE
+#define RT_USING_MESSAGEQUEUE
 // </c>
 // </h>
 
